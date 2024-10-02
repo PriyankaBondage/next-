@@ -1,5 +1,7 @@
 "use client";
+import next from "next";
 import styles from "./page.module.css";
+import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -8,27 +10,59 @@ const webPath = 'https://talkcmo.com';
 
 export default function Home() {
   const [data, setData] = useState([]);
+  const[nextData,setNext] = useState(null)
 
   useEffect(() => {
     fetchData();
+    dummyData()
   }, []);
+
+
+ 
+  const dummyData = async () => {
+    try {
+      const response = await axios.get('https://backend-c3o6.vercel.app/', { timeout: 10000 }); // Timeout set to 10 seconds
+      console.log("Data fetched successfully:", response.data);
+      setNext(response.data);
+    } catch (err) {
+      console.error("Error occurred while fetching data:", err.message);
+  
+      if (err.response) {
+        console.error("Server responded with status:", err.response.status);
+      } else if (err.request) {
+        console.error("No response received:", err.request);
+      } else {
+        console.error("Error:", err.message);
+      }
+    }
+  };
+  
+  
+
+  useEffect(()=>{
+    dummyData()
+  },[nextData])
 
   const fetchData = async () => {
     try {
       const response = await fetch(`${API_ROOT}/api/post/homelatest`);
       const data = await response.json();
       setData(data);
-      console.log("datanew", data);
+      // console.log("datanew", data);
     } catch (err) {
       console.error('Error fetching data:', err);
     }
   };
+  console.log("next",nextData)
 
   return (
     <div className="container container-max mt-3 main-page" style={{ overflow: "hidden" }}>
+ 
       <div className="row">
         <div className="col-12">
-          <h1 className="fw-bold borderB py-1 h5">Updated Latest Data</h1>
+   
+          <h1 className="fw-bold borderB py-1 h5">Latest Data</h1>
+          <h1>{nextData}</h1>
         </div>
 
         <ul>
